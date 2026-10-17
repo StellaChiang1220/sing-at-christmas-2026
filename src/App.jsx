@@ -1,15 +1,107 @@
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+const FORMSPREE_URL = "https://formspree.io/f/mvkzwyde";
+
+// 邀請函密碼的 SHA-256 雜湊值（避免明文出現在原始碼中）
+// 更換密碼：在終端機執行 printf '新密碼' | shasum -a 256，把結果貼到這裡
+const INVITE_CODE_HASH = "1bd134b2ab8345b4c082f3382e85ed4c00340c7188876b6cbe1e17cf161e4c69";
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const FIELDS = [
+  { name: 'name', label: '參加人姓名', type: 'text', placeholder: '例如：派對小天后', autoComplete: 'name' },
+  { name: 'email', label: '參加人 Email', type: 'email', placeholder: 'your.email@example.com', autoComplete: 'email' },
+  { name: 'song1', label: '第一首歌', type: 'text', placeholder: '歌手 - 歌名' },
+  { name: 'song2', label: '第二首歌', type: 'text', placeholder: '歌手 - 歌名' },
+  { name: 'inviteCode', label: '邀請函密碼', type: 'password', placeholder: '請輸入邀請函上的密碼', autoComplete: 'off' },
+];
+
+const CHECKLIST = [
+  { id: 'gift', text: '我會準備一份價值 $400 元以上的良心禮，並想好一首形容它的歌' },
+  { id: 'songs', text: '我填的兩首歌都是我真的會唱的拿手歌' },
+  { id: 'funny', text: '我知道之後會被分配兩首歌，要準備兩份對應的有梗禮' },
+];
+
+const EMPTY_FORM = Object.fromEntries(FIELDS.map((f) => [f.name, '']));
+
+async function sha256(text) {
+  const bytes = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function validate(values) {
+  const errors = {};
+  for (const field of FIELDS) {
+    if (!values[field.name].trim()) errors[field.name] = `請填寫${field.label}`;
+  }
+  if (!errors.email && !EMAIL_PATTERN.test(values.email.trim())) {
+    errors.email = 'Email 格式看起來不太對，請再檢查一次';
+  }
+  if (!errors.song1 && !errors.song2 && values.song1.trim() === values.song2.trim()) {
+    errors.song2 = '兩首歌不能一樣喔';
+  }
+  if (!errors.inviteCode && (await sha256(values.inviteCode.trim())) !== INVITE_CODE_HASH) {
+    errors.inviteCode = '邀請函密碼不正確';
+  }
+  return errors;
+}
 
 export default function App() {
+  const [values, setValues] = useState(EMPTY_FORM);
+  const [errors, setErrors] = useState({});
+  const [submitError, setSubmitError] = useState('');
+  const [confirming, setConfirming] = useState(false);
+  const [checked, setChecked] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const FORMSPREE_URL = "https://formspree.io/f/mvkzwyde";
+  const honeypotRef = useRef(null);
 
+  const allChecked = CHECKLIST.every((item) => checked[item.id]);
+
+  useEffect(() => {
+    if (!confirming) return;
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape' && !loading) setConfirming(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [confirming, loading]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setValues((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
+
+  // 第一步：檢查欄位，通過後打開確認視窗
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setSubmitError('');
+    const nextErrors = await validate(values);
+    setErrors(nextErrors);
+    const firstInvalid = FIELDS.find((f) => nextErrors[f.name]);
+    if (firstInvalid) {
+      document.getElementById(firstInvalid.name)?.focus();
+      return;
+    }
+    setChecked({});
+    setConfirming(true);
+  };
 
-    const formData = new FormData(e.target);
+  // 第二步：確認後才真正送到 Formspree（不會送出邀請函密碼）
+  const handleConfirm = async () => {
+    if (loading || !allChecked) return;
+    setLoading(true);
+    setSubmitError('');
+
+    const formData = new FormData();
+    formData.append('name', values.name.trim());
+    formData.append('email', values.email.trim());
+    formData.append('song1', values.song1.trim());
+    formData.append('song2', values.song2.trim());
+    formData.append('_gotcha', honeypotRef.current?.value ?? '');
+    formData.append('_subject', `聖誕大會報名：${values.name.trim()}`);
 
     try {
       const response = await fetch(FORMSPREE_URL, {
@@ -22,15 +114,52 @@ export default function App() {
 
       if (response.ok) {
         setSubmitted(true);
+        setConfirming(false);
       } else {
-        alert('發生了一點小錯誤，請稍後再試一次！');
+        const data = await response.json().catch(() => null);
+        const detail = data?.errors?.map((err) => err.message).join('、');
+        setSubmitError(`送出失敗，請稍後再試一次。${detail ? `（${detail}）` : ''}`);
+        setConfirming(false);
       }
-    } catch (error) {
-      alert('網路連線異常，請檢查您的網路狀況。');
+    } catch {
+      setSubmitError('網路連線異常，請檢查您的網路狀況後再送出一次。');
+      setConfirming(false);
     } finally {
       setLoading(false);
     }
   };
+
+  const inputClass = (name) =>
+    `w-full bg-stone-800 border rounded-xl px-4 py-3 text-white placeholder-stone-500 focus:outline-none transition-colors ${
+      errors[name] ? 'border-red-500 focus:border-red-400' : 'border-stone-700 focus:border-red-500'
+    }`;
+
+  const renderField = (field) => (
+    <div key={field.name}>
+      <label htmlFor={field.name} className="block text-sm font-medium text-stone-300 mb-1.5">
+        {field.label} <span className="text-red-400">*</span>
+      </label>
+      <input
+        type={field.type}
+        id={field.name}
+        name={field.name}
+        value={values[field.name]}
+        onChange={handleChange}
+        autoComplete={field.autoComplete}
+        placeholder={field.placeholder}
+        aria-invalid={Boolean(errors[field.name])}
+        aria-describedby={errors[field.name] ? `${field.name}-error` : undefined}
+        className={inputClass(field.name)}
+      />
+      {errors[field.name] && (
+        <p id={`${field.name}-error`} className="mt-1.5 text-sm text-red-400">
+          {errors[field.name]}
+        </p>
+      )}
+    </div>
+  );
+
+  const fieldByName = Object.fromEntries(FIELDS.map((f) => [f.name, f]));
 
   return (
     <div className="bg-gradient-to-br from-red-950 via-stone-900 to-emerald-950 text-stone-100 min-h-screen relative overflow-hidden">
@@ -46,7 +175,7 @@ export default function App() {
           </span>
           <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white drop-shadow-md">
             第一屆
-            <br></br>
+            <br />
             聖誕邊唱邊換禮物大會
           </h1>
           <p className="text-lg text-stone-300 font-light">
@@ -146,30 +275,29 @@ export default function App() {
           <h2 className="text-2xl font-bold text-red-400 mb-2 flex items-center gap-2">
             📝 報名與歌曲填寫
           </h2>
-          <p className="text-stone-400 text-sm mb-6">請填寫下方表單提交您的個人資料與兩首拿手歌曲：</p>
-          
+          <p className="text-stone-400 text-sm mb-6">請填寫下方表單提交您的個人資料與兩首拿手歌曲（<span className="text-red-400">*</span> 為必填）：</p>
+
           {!submitted ? (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-stone-300 mb-1.5">參加人姓名</label>
-                <input type="text" name="name" required className="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-3 text-white placeholder-stone-500 focus:outline-none focus:border-red-500 transition-colors" placeholder="例如：派對小天后" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-stone-300 mb-1.5">參加人 Email</label>
-                <input type="email" name="email" required className="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-3 text-white placeholder-stone-500 focus:outline-none focus:border-red-500 transition-colors" placeholder="your.email@example.com" />
-              </div>
+            <form onSubmit={handleSubmit} noValidate className="space-y-5">
+              {renderField(fieldByName.name)}
+              {renderField(fieldByName.email)}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-stone-300 mb-1.5">第一首歌</label>
-                  <input type="text" name="song1" required className="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-3 text-white placeholder-stone-500 focus:outline-none focus:border-red-500 transition-colors" placeholder="歌手 - 歌名" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-stone-300 mb-1.5">第二首歌</label>
-                  <input type="text" name="song2" required className="w-full bg-stone-800 border border-stone-700 rounded-xl px-4 py-3 text-white placeholder-stone-500 focus:outline-none focus:border-red-500 transition-colors" placeholder="歌手 - 歌名" />
-                </div>
+                {renderField(fieldByName.song1)}
+                {renderField(fieldByName.song2)}
               </div>
-              <button 
-                type="submit" 
+              {renderField(fieldByName.inviteCode)}
+
+              {/* 防機器人欄位：真人看不到，機器人填了 Formspree 會自動擋掉 */}
+              <input ref={honeypotRef} type="text" name="_gotcha" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
+
+              {submitError && (
+                <div role="alert" className="p-4 bg-red-500/15 border border-red-500/40 text-red-300 rounded-xl text-sm">
+                  {submitError}
+                </div>
+              )}
+
+              <button
+                type="submit"
                 disabled={loading}
                 className="w-full mt-4 bg-gradient-to-r from-red-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition-all transform active:scale-[0.99] disabled:opacity-50"
               >
@@ -192,6 +320,67 @@ export default function App() {
         </section>
 
       </main>
+
+      {/* 送出前確認視窗 */}
+      {confirming && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          onClick={() => !loading && setConfirming(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirm-title"
+            className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-stone-900 border border-stone-700 rounded-2xl p-6 shadow-2xl space-y-5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 id="confirm-title" className="text-xl font-bold text-white">🎄 送出前再確認一下</h3>
+
+            <dl className="bg-stone-800/60 border border-stone-700 rounded-xl p-4 space-y-2 text-sm">
+              {FIELDS.filter((f) => f.name !== 'inviteCode').map((f) => (
+                <div key={f.name} className="flex gap-3">
+                  <dt className="w-24 flex-shrink-0 text-stone-400">{f.label}</dt>
+                  <dd className="text-white break-all">{values[f.name].trim()}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <fieldset className="space-y-3">
+              <legend className="text-sm font-medium text-stone-300 mb-2">請勾選以下檢查事項：</legend>
+              {CHECKLIST.map((item) => (
+                <label key={item.id} className="flex items-start gap-3 text-sm text-stone-200 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(checked[item.id])}
+                    onChange={(e) => setChecked((prev) => ({ ...prev, [item.id]: e.target.checked }))}
+                    className="mt-0.5 w-4 h-4 accent-emerald-500 flex-shrink-0"
+                  />
+                  <span>{item.text}</span>
+                </label>
+              ))}
+            </fieldset>
+
+            <div className="flex gap-3 pt-1">
+              <button
+                type="button"
+                onClick={() => setConfirming(false)}
+                disabled={loading}
+                className="flex-1 py-3 rounded-xl border border-stone-600 text-stone-200 hover:bg-stone-800 transition-colors disabled:opacity-50"
+              >
+                返回修改
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirm}
+                disabled={loading || !allChecked}
+                className="flex-1 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-red-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {loading ? '送出中...' : '確認送出'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
