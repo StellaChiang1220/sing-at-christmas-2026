@@ -5,3 +5,46 @@
 body {
   font-family: 'Noto Sans TC', sans-serif;
 }
+
+/* 飄雪：外層負責往下掉，內層負責左右飄 */
+.snowflake {
+  position: absolute;
+  top: -10px;
+  animation-name: snow-fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+.snowflake-inner {
+  display: block;
+  border-radius: 9999px;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  animation-name: snow-sway;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes snow-fall {
+  to {
+    transform: translateY(calc(100vh + 20px));
+  }
+}
+
+@keyframes snow-sway {
+  from {
+    transform: translateX(-12px);
+  }
+  to {
+    transform: translateX(12px);
+  }
+}
+
+/* 系統設定「減少動態效果」的使用者不顯示飄雪 */
+@media (prefers-reduced-motion: reduce) {
+  .snowfall {
+    display: none;
+  }
+}

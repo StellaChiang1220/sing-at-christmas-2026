@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import Snowfall from './Snowfall.jsx';
+import Snowman from './Snowman.jsx';
 
 const FORMSPREE_URL = "https://formspree.io/f/mvkzwyde";
 
@@ -162,11 +164,13 @@ export default function App() {
   const fieldByName = Object.fromEntries(FIELDS.map((f) => [f.name, f]));
 
   return (
-    <div className="bg-gradient-to-br from-red-950 via-stone-900 to-emerald-950 text-stone-100 min-h-screen relative overflow-hidden">
-      {/* 裝飾背景光暈 */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-red-600/10 blur-[120px] pointer-events-none"></div>
+    <div className="bg-gradient-to-b from-[#020617] via-[#0b1d4d] to-[#1e3a8a] text-stone-100 min-h-screen relative overflow-hidden flex flex-col">
+      {/* 夜空頂端的月光光暈 */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-sky-300/10 blur-[120px] pointer-events-none"></div>
 
-      <main className="relative max-w-3xl mx-auto px-4 py-12 space-y-12">
+      <Snowfall />
+
+      <main className="relative z-10 w-full max-w-3xl mx-auto px-4 pt-12 space-y-12 flex-1">
 
         {/* Section 1 */}
         <section className="text-center space-y-4 pt-6">
@@ -299,7 +303,7 @@ export default function App() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-4 bg-gradient-to-r from-red-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition-all transform active:scale-[0.99] disabled:opacity-50"
+                className="w-full mt-4 bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-xl text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition-all transform active:scale-[0.99] disabled:opacity-50"
               >
                 {loading ? '送出中...' : '送出歌單與報名'}
               </button>
@@ -320,6 +324,23 @@ export default function App() {
         </section>
 
       </main>
+
+      {/* 頁面最下方的雪地：後層較暗、前層純白，做出起伏的層次 */}
+      <div className="relative h-28 md:h-40 pointer-events-none" aria-hidden="true">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1440 160" preserveAspectRatio="none">
+          <path
+            d="M0,70 C180,30 340,40 520,65 C700,90 860,35 1040,45 C1200,55 1320,80 1440,60 L1440,160 L0,160 Z"
+            fill="#dbeafe"
+          />
+          <path
+            d="M0,105 C160,80 320,85 480,100 C660,118 820,78 1000,88 C1180,98 1300,115 1440,100 L1440,160 L0,160 Z"
+            fill="#ffffff"
+          />
+        </svg>
+        {/* 左右兩個雪人，右邊的鏡像翻轉並換上綠圍巾 */}
+        <Snowman className="absolute bottom-[18%] left-[4%] md:left-[8%] w-16 md:w-28 h-auto drop-shadow-lg" />
+        <Snowman scarfColor="#059669" className="absolute bottom-[18%] right-[4%] md:right-[8%] w-14 md:w-24 h-auto -scale-x-100 drop-shadow-lg" />
+      </div>
 
       {/* 送出前確認視窗 */}
       {confirming && (
@@ -373,7 +394,7 @@ export default function App() {
                 type="button"
                 onClick={handleConfirm}
                 disabled={loading || !allChecked}
-                className="flex-1 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-red-600 to-emerald-600 hover:from-red-500 hover:to-emerald-500 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex-1 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-red-600 to-amber-500 hover:from-red-500 hover:to-amber-400 text-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {loading ? '送出中...' : '確認送出'}
               </button>
