@@ -132,13 +132,13 @@ export default function App() {
   };
 
   const inputClass = (name) =>
-    `w-full bg-stone-800 border rounded-xl px-4 py-3 text-white placeholder-stone-500 focus:outline-none transition-colors ${
-      errors[name] ? 'border-red-500 focus:border-red-400' : 'border-stone-700 focus:border-red-500'
+    `w-full bg-slate-950/50 border rounded-xl px-4 py-3 text-white placeholder-amber-50/40 focus:outline-none transition-colors ${
+      errors[name] ? 'border-red-500 focus:border-red-400' : 'border-amber-100/25 focus:border-amber-300'
     }`;
 
   const renderField = (field) => (
     <div key={field.name}>
-      <label htmlFor={field.name} className="block text-sm font-medium text-stone-300 mb-1.5">
+      <label htmlFor={field.name} className="block text-sm font-medium text-amber-50/80 mb-1.5">
         {field.label} <span className="text-red-400">*</span>
       </label>
       <input
@@ -164,7 +164,7 @@ export default function App() {
   const fieldByName = Object.fromEntries(FIELDS.map((f) => [f.name, f]));
 
   return (
-    <div className="bg-gradient-to-b from-[#020617] via-[#0b1d4d] to-[#1e3a8a] text-stone-100 min-h-screen relative overflow-hidden flex flex-col">
+    <div className="bg-[linear-gradient(to_bottom,#020617_0%,#0b1d4d_95%,#1e3a8a_100%)] text-stone-100 min-h-screen relative overflow-hidden flex flex-col">
       {/* 夜空頂端的月光光暈 */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-sky-300/10 blur-[120px] pointer-events-none"></div>
 
@@ -182,71 +182,71 @@ export default function App() {
             <br />
             聖誕邊唱邊換禮物大會
           </h1>
-          <p className="text-lg text-stone-300 font-light">
+          <p className="text-lg text-amber-50/80 font-light">
             2026《錢櫃音樂課》沒有贊助主辦
           </p>
         </section>
 
         {/* Section 2 */}
-        <section className="bg-stone-900/80 backdrop-blur border border-stone-800 rounded-2xl p-6 md:p-8 shadow-xl">
+        <section className="glow-card rounded-2xl p-6 md:p-8">
           <h2 className="text-2xl font-bold text-red-400 mb-6 flex items-center gap-2">
             🎁 你需要準備：
           </h2>
-          <ol className="space-y-4 text-stone-200">
-            <li className="flex items-start gap-3 bg-stone-800/50 p-4 rounded-xl border border-stone-800">
+          <ol className="space-y-4 text-amber-50/90">
+            <li className="flex items-start gap-3 glow-item p-4 rounded-xl">
               <span className="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold text-sm">1</span>
               <div>
                 <strong className="text-white block mb-0.5">一份精選良心禮</strong>
-                <span className="text-stone-400 text-sm">價值 $400 元以上，並挑選一首「歌」來形容它作為猜謎線索。</span>
+                <span className="text-amber-100/70 text-sm">價值 $400 元以上，並挑選一首「歌」來形容它作為猜謎線索。</span>
               </div>
             </li>
-            <li className="flex items-start gap-3 bg-stone-800/50 p-4 rounded-xl border border-stone-800">
+            <li className="flex items-start gap-3 glow-item p-4 rounded-xl">
               <span className="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold text-sm">2</span>
               <div>
                 <strong className="text-white block mb-0.5">兩首你會唱的歌</strong>
-                <span className="text-stone-400 text-sm">提供兩首拿手歌曲，將成為「有梗禮」的抽題母體。</span>
+                <span className="text-amber-100/70 text-sm">提供兩首拿手歌曲，將成為「有梗禮」的抽題母體。</span>
               </div>
             </li>
-            <li className="flex items-start gap-3 bg-stone-800/50 p-4 rounded-xl border border-stone-800">
+            <li className="flex items-start gap-3 glow-item p-4 rounded-xl">
               <span className="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold text-sm">3</span>
               <div>
                 <strong className="text-white block mb-0.5">兩份「有梗禮」</strong>
-                <span className="text-stone-400 text-sm">系統將隨機配對兩首歌給你，請針對這兩首歌準備對應的超有梗禮物！</span>
+                <span className="text-amber-100/70 text-sm">系統將隨機配對兩首歌給你，請針對這兩首歌準備對應的超有梗禮物！</span>
               </div>
             </li>
           </ol>
         </section>
 
         {/* Section 3 */}
-        <section className="bg-stone-900/80 backdrop-blur border border-stone-800 rounded-2xl p-6 md:p-8 shadow-xl">
+        <section className="glow-card rounded-2xl p-6 md:p-8">
           <h2 className="text-2xl font-bold text-emerald-400 mb-6 flex items-center gap-2">
             ⏰ 當日流程：
           </h2>
           <div className="relative border-l-2 border-emerald-500/30 ml-3 space-y-6 pl-6">
             <div className="relative">
-              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-stone-900"></span>
+              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-emerald-400 text-emerald-400 shadow-[0_0_10px_currentColor]"></span>
               <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">19:00 - 19:40</span>
               <h3 className="text-lg font-bold text-white mt-0.5">歡樂用餐與進場準備時間</h3>
             </div>
             <div className="relative">
-              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-stone-900"></span>
+              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-emerald-400 text-emerald-400 shadow-[0_0_10px_currentColor]"></span>
               <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">19:40 - 20:30</span>
               <h3 className="text-lg font-bold text-white mt-0.5">誰是「有梗王」</h3>
-              <p className="text-sm text-stone-400 mt-1">事前抽歌大比拼，現場票選出最會搞怪的有梗王，搶先獲得優先選禮權！</p>
+              <p className="text-sm text-amber-100/70 mt-1">事前抽歌大比拼，現場票選出最會搞怪的有梗王，搶先獲得優先選禮權！</p>
             </div>
             <div className="relative">
-              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-stone-600 ring-4 ring-stone-900"></span>
-              <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider">20:30 - 20:40</span>
+              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-amber-200 text-amber-200 shadow-[0_0_10px_currentColor]"></span>
+              <span className="text-xs font-semibold text-amber-200 uppercase tracking-wider">20:30 - 20:40</span>
               <h3 className="text-lg font-bold text-white mt-0.5">休息拍照</h3>
             </div>
             <div className="relative">
-              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-red-500 ring-4 ring-stone-900"></span>
+              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-red-400 text-red-400 shadow-[0_0_10px_currentColor]"></span>
               <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">20:40 - 22:00</span>
               <h3 className="text-lg font-bold text-white mt-0.5">真正「良心禮」</h3>
-              <p className="text-sm text-stone-400 mt-1">點歌、捏鼻唱提示、白板速寫搶答、抽籤交換拿好禮！</p>
+              <p className="text-sm text-amber-100/70 mt-1">點歌、捏鼻唱提示、白板速寫搶答、抽籤交換拿好禮！</p>
             </div>
             <div className="relative">
-              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-stone-900"></span>
+              <span className="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-emerald-400 text-emerald-400 shadow-[0_0_10px_currentColor]"></span>
               <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">22:00 - 23:00</span>
               <h3 className="text-lg font-bold text-white mt-0.5">聊天唱歌聖誕快樂</h3>
             </div>
@@ -254,32 +254,32 @@ export default function App() {
         </section>
 
         {/* Section 4 */}
-        <section className="bg-stone-900/80 backdrop-blur border border-stone-800 rounded-2xl p-6 md:p-8 shadow-xl">
+        <section className="glow-card rounded-2xl p-6 md:p-8">
           <h2 className="text-2xl font-bold text-amber-400 mb-6 flex items-center gap-2">
             📜 活動規則：
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-stone-800/40 border border-stone-800 p-5 rounded-xl">
+            <div className="glow-item p-5 rounded-xl">
               <h3 className="font-bold text-amber-300 text-lg mb-2">關於良心禮</h3>
-              <p className="text-stone-300 text-sm leading-relaxed">價值 $400 以上。主唱上台唱歌時，必須將禮物特徵融入歌中（甚至規定捏鼻子唱），台下使用白板搶答，最後由有梗王抽籤帶回家！</p>
+              <p className="text-amber-50/80 text-sm leading-relaxed">價值 $400 以上。主唱上台唱歌時，必須將禮物特徵融入歌中（甚至規定捏鼻子唱），台下使用白板搶答，最後由有梗王抽籤帶回家！</p>
             </div>
-            <div className="bg-stone-800/40 border border-stone-800 p-5 rounded-xl">
+            <div className="glow-item p-5 rounded-xl">
               <h3 className="font-bold text-amber-300 text-lg mb-2">關於兩首歌</h3>
-              <p className="text-stone-300 text-sm leading-relaxed">每人提交 2 首平常最拿手的口袋歌單，交給系統進行隨機盲抽盲配，絕不重複且絕對保密到家。</p>
+              <p className="text-amber-50/80 text-sm leading-relaxed">每人提交 2 首平常最拿手的口袋歌單，交給系統進行隨機盲抽盲配，絕不重複且絕對保密到家。</p>
             </div>
-            <div className="bg-stone-800/40 border border-stone-800 p-5 rounded-xl">
+            <div className="glow-item p-5 rounded-xl">
               <h3 className="font-bold text-amber-300 text-lg mb-2">關於有梗禮</h3>
-              <p className="text-stone-300 text-sm leading-relaxed">拿到指定歌單後，發揮創意準備超有梗、諧音梗、或是惡搞的實質禮物，當天隨時拿出來引爆全場笑聲！</p>
+              <p className="text-amber-50/80 text-sm leading-relaxed">拿到指定歌單後，發揮創意準備超有梗、諧音梗、或是惡搞的實質禮物，當天隨時拿出來引爆全場笑聲！</p>
             </div>
           </div>
         </section>
 
         {/* Section 5 - 表單區塊（已加上 name 屬性與 Formspree 串接） */}
-        <section className="bg-stone-900/80 backdrop-blur border border-stone-800 rounded-2xl p-6 md:p-8 shadow-xl">
+        <section className="glow-card rounded-2xl p-6 md:p-8">
           <h2 className="text-2xl font-bold text-red-400 mb-2 flex items-center gap-2">
             📝 報名與歌曲填寫
           </h2>
-          <p className="text-stone-400 text-sm mb-6">請填寫下方表單提交您的個人資料與兩首拿手歌曲（<span className="text-red-400">*</span> 為必填）：</p>
+          <p className="text-amber-100/70 text-sm mb-6">請填寫下方表單提交您的個人資料與兩首拿手歌曲（<span className="text-red-400">*</span> 為必填）：</p>
 
           {!submitted ? (
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
@@ -311,7 +311,7 @@ export default function App() {
           ) : (
             <div className="p-6 bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 rounded-xl text-center space-y-2">
               <h3 className="text-xl font-bold">✨ 提交成功！</h3>
-              <p className="text-sm text-stone-300">資料已順利送出，我們已經收到您的歌單囉！</p>
+              <p className="text-sm text-amber-50/80">資料已順利送出，我們已經收到您的歌單囉！</p>
             </div>
           )}
         </section>
@@ -352,24 +352,24 @@ export default function App() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="confirm-title"
-            className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-stone-900 border border-stone-700 rounded-2xl p-6 shadow-2xl space-y-5"
+            className="w-full max-w-md max-h-[90vh] overflow-y-auto bg-[#0b1d4d]/95 border border-amber-200/40 rounded-2xl p-6 shadow-[0_0_40px_rgba(253,224,71,0.2)] space-y-5"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 id="confirm-title" className="text-xl font-bold text-white">🎄 送出前再確認一下</h3>
 
-            <dl className="bg-stone-800/60 border border-stone-700 rounded-xl p-4 space-y-2 text-sm">
+            <dl className="glow-item rounded-xl p-4 space-y-2 text-sm">
               {FIELDS.filter((f) => f.name !== 'inviteCode').map((f) => (
                 <div key={f.name} className="flex gap-3">
-                  <dt className="w-24 flex-shrink-0 text-stone-400">{f.label}</dt>
+                  <dt className="w-24 flex-shrink-0 text-amber-100/70">{f.label}</dt>
                   <dd className="text-white break-all">{values[f.name].trim()}</dd>
                 </div>
               ))}
             </dl>
 
             <fieldset className="space-y-3">
-              <legend className="text-sm font-medium text-stone-300 mb-2">請勾選以下檢查事項：</legend>
+              <legend className="text-sm font-medium text-amber-50/80 mb-2">請勾選以下檢查事項：</legend>
               {CHECKLIST.map((item) => (
-                <label key={item.id} className="flex items-start gap-3 text-sm text-stone-200 cursor-pointer">
+                <label key={item.id} className="flex items-start gap-3 text-sm text-amber-50/90 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={Boolean(checked[item.id])}
@@ -386,7 +386,7 @@ export default function App() {
                 type="button"
                 onClick={() => setConfirming(false)}
                 disabled={loading}
-                className="flex-1 py-3 rounded-xl border border-stone-600 text-stone-200 hover:bg-stone-800 transition-colors disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl border border-amber-100/40 text-amber-50 hover:bg-white/10 transition-colors disabled:opacity-50"
               >
                 返回修改
               </button>

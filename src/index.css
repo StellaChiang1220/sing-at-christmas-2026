@@ -6,6 +6,27 @@ body {
   font-family: 'Noto Sans TC', sans-serif;
 }
 
+/* 深藍色卡片，螢光藍光暈 */
+@layer components {
+  .glow-card {
+    /* 約 70% 不透明：隱約看得到背後飄雪，又不影響閱讀 */
+    background: linear-gradient(160deg, rgba(30, 48, 110, 0.74), rgba(10, 22, 60, 0.68));
+    box-shadow:
+      0 0 24px rgba(56, 189, 248, 0.35),
+      0 0 70px rgba(56, 189, 248, 0.15),
+      inset 0 1px 0 rgba(186, 230, 253, 0.15);
+    /* 輕微模糊，讓雪花變成柔和光點而不是被完全糊掉 */
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  /* 卡片內的小區塊 */
+  .glow-item {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(186, 230, 253, 0.12);
+  }
+}
+
 /* 飄雪：外層負責往下掉，內層負責左右飄 */
 .snowflake {
   position: absolute;
