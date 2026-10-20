@@ -11,17 +11,16 @@ const INVITE_CODE_HASH = "1bd134b2ab8345b4c082f3382e85ed4c00340c7188876b6cbe1e17
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const FIELDS = [
-  { name: 'name', label: '參加人姓名', type: 'text', placeholder: '例如：派對小天后', autoComplete: 'name' },
-  { name: 'email', label: '參加人 Email', type: 'email', placeholder: 'your.email@example.com', autoComplete: 'email' },
-  { name: 'song1', label: '第一首歌', type: 'text', placeholder: '歌手 - 歌名' },
-  { name: 'song2', label: '第二首歌', type: 'text', placeholder: '歌手 - 歌名' },
-  { name: 'inviteCode', label: '邀請函密碼', type: 'password', placeholder: '請輸入邀請函上的密碼', autoComplete: 'off' },
+  { name: 'name', label: '參加人姓名', type: 'text', placeholder: '可以不用誠實寫名字', autoComplete: 'name' },
+  { name: 'email', label: '參加人 Email', type: 'email', placeholder: '必須是收得到信的唷！不然你會收不到題目', autoComplete: 'email' },
+  { name: 'song', label: '準備收到有梗禮的歌 (1首你會唱的歌)', shortLabel: '你的歌', type: 'text', placeholder: '必須是錢櫃能點到的歌，還有，請善良' },
+  { name: 'inviteCode', label: '邀請函密碼', type: 'password', placeholder: '你說要參加以後，主辦方才會給你密碼唷', autoComplete: 'off' },
 ];
 
 const CHECKLIST = [
   { id: 'gift', text: '我會準備一份價值 $400 元以上的良心禮，並想好一首形容它的歌' },
-  { id: 'songs', text: '我填的兩首歌都是我真的會唱的拿手歌' },
-  { id: 'funny', text: '我知道之後會被分配兩首歌，要準備兩份對應的有梗禮' },
+  { id: 'songs', text: '我填的歌是我真的會唱的拿手歌' },
+  { id: 'funny', text: '我知道之後會被分配一首歌，要準備一份對應的有梗禮' },
 ];
 
 const EMPTY_FORM = Object.fromEntries(FIELDS.map((f) => [f.name, '']));
@@ -35,13 +34,10 @@ async function sha256(text) {
 async function validate(values) {
   const errors = {};
   for (const field of FIELDS) {
-    if (!values[field.name].trim()) errors[field.name] = `請填寫${field.label}`;
+    if (!values[field.name].trim()) errors[field.name] = `請填寫${field.shortLabel ?? field.label}`;
   }
   if (!errors.email && !EMAIL_PATTERN.test(values.email.trim())) {
     errors.email = 'Email 格式看起來不太對，請再檢查一次';
-  }
-  if (!errors.song1 && !errors.song2 && values.song1.trim() === values.song2.trim()) {
-    errors.song2 = '兩首歌不能一樣喔';
   }
   if (!errors.inviteCode && (await sha256(values.inviteCode.trim())) !== INVITE_CODE_HASH) {
     errors.inviteCode = '邀請函密碼不正確';
@@ -100,8 +96,7 @@ export default function App() {
     const formData = new FormData();
     formData.append('name', values.name.trim());
     formData.append('email', values.email.trim());
-    formData.append('song1', values.song1.trim());
-    formData.append('song2', values.song2.trim());
+    formData.append('song', values.song.trim());
     formData.append('_gotcha', honeypotRef.current?.value ?? '');
     formData.append('_subject', `聖誕大會報名：${values.name.trim()}`);
 
@@ -203,15 +198,15 @@ export default function App() {
             <li className="flex items-start gap-3 glow-item p-4 rounded-xl">
               <span className="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold text-sm">2</span>
               <div>
-                <strong className="text-white block mb-0.5">兩首你會唱的歌</strong>
-                <span className="text-amber-100/70 text-sm">提供兩首拿手歌曲，將成為「有梗禮」的抽題母體。</span>
+                <strong className="text-white block mb-0.5">一首你會唱的歌</strong>
+                <span className="text-amber-100/70 text-sm">提供一首拿手歌曲，將成為「有梗禮」的抽題母體。</span>
               </div>
             </li>
             <li className="flex items-start gap-3 glow-item p-4 rounded-xl">
               <span className="flex-shrink-0 w-7 h-7 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold text-sm">3</span>
               <div>
-                <strong className="text-white block mb-0.5">兩份「有梗禮」</strong>
-                <span className="text-amber-100/70 text-sm">系統將隨機配對兩首歌給你，請針對這兩首歌準備對應的超有梗禮物！</span>
+                <strong className="text-white block mb-0.5">一份「有梗禮」</strong>
+                <span className="text-amber-100/70 text-sm">系統將隨機配對一首歌給你，請針對這首歌準備對應的超有梗禮物！</span>
               </div>
             </li>
           </ol>
@@ -264,12 +259,12 @@ export default function App() {
               <p className="text-amber-50/80 text-sm leading-relaxed">價值 $400 以上。主唱上台唱歌時，必須將禮物特徵融入歌中（甚至規定捏鼻子唱），台下使用白板搶答，最後由有梗王抽籤帶回家！</p>
             </div>
             <div className="glow-item p-5 rounded-xl">
-              <h3 className="font-bold text-amber-300 text-lg mb-2">關於兩首歌</h3>
-              <p className="text-amber-50/80 text-sm leading-relaxed">每人提交 2 首平常最拿手的口袋歌單，交給系統進行隨機盲抽盲配，絕不重複且絕對保密到家。</p>
+              <h3 className="font-bold text-amber-300 text-lg mb-2">關於拿手歌</h3>
+              <p className="text-amber-50/80 text-sm leading-relaxed">每人提交 1 首平常最拿手的口袋歌，交給系統進行隨機盲抽盲配，絕不重複且絕對保密到家。</p>
             </div>
             <div className="glow-item p-5 rounded-xl">
               <h3 className="font-bold text-amber-300 text-lg mb-2">關於有梗禮</h3>
-              <p className="text-amber-50/80 text-sm leading-relaxed">拿到指定歌單後，發揮創意準備超有梗、諧音梗、或是惡搞的實質禮物，當天隨時拿出來引爆全場笑聲！</p>
+              <p className="text-amber-50/80 text-sm leading-relaxed">拿到指定的歌後，發揮創意準備超有梗、諧音梗、或是惡搞的實質禮物，當天隨時拿出來引爆全場笑聲！</p>
             </div>
           </div>
         </section>
@@ -279,16 +274,13 @@ export default function App() {
           <h2 className="text-2xl font-bold text-red-400 mb-2 flex items-center gap-2">
             📝 報名與歌曲填寫
           </h2>
-          <p className="text-amber-100/70 text-sm mb-6">請填寫下方表單提交您的個人資料與兩首拿手歌曲（<span className="text-red-400">*</span> 為必填）：</p>
+          <p className="text-amber-100/70 text-sm mb-6">請填寫下方表單提交您的個人資料與一首拿手歌曲（<span className="text-red-400">*</span> 為必填）：</p>
 
           {!submitted ? (
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               {renderField(fieldByName.name)}
               {renderField(fieldByName.email)}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {renderField(fieldByName.song1)}
-                {renderField(fieldByName.song2)}
-              </div>
+              {renderField(fieldByName.song)}
               {renderField(fieldByName.inviteCode)}
 
               {/* 防機器人欄位：真人看不到，機器人填了 Formspree 會自動擋掉 */}
@@ -360,7 +352,7 @@ export default function App() {
             <dl className="glow-item rounded-xl p-4 space-y-2 text-sm">
               {FIELDS.filter((f) => f.name !== 'inviteCode').map((f) => (
                 <div key={f.name} className="flex gap-3">
-                  <dt className="w-24 flex-shrink-0 text-amber-100/70">{f.label}</dt>
+                  <dt className="w-24 flex-shrink-0 text-amber-100/70">{f.shortLabel ?? f.label}</dt>
                   <dd className="text-white break-all">{values[f.name].trim()}</dd>
                 </div>
               ))}
