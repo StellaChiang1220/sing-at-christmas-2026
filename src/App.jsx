@@ -13,7 +13,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const FIELDS = [
   { name: 'name', label: '參加人姓名', type: 'text', placeholder: '可以不用誠實寫名字', autoComplete: 'name' },
   { name: 'email', label: '參加人 Email', type: 'email', placeholder: '必須是收得到信的唷！不然你會收不到題目', autoComplete: 'email' },
-  { name: 'song', label: '準備收到有梗禮的歌 (1首你會唱的歌)', shortLabel: '你的歌', type: 'text', placeholder: '必須是錢櫃能點到的歌，還有，請善良' },
+  { name: 'song', label: '準備收到有梗禮的歌 (1首你會唱的歌)', shortLabel: '你的歌', type: 'text', placeholder: '錢櫃能點到的歌，填寫“歌手_歌名”' },
   { name: 'inviteCode', label: '邀請函密碼', type: 'password', placeholder: '你說要參加以後，主辦方才會給你密碼唷', autoComplete: 'off' },
 ];
 
