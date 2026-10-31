@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Snowfall from './Snowfall.jsx';
 import Snowman from './Snowman.jsx';
+import { sha256 } from './sha256.js';
 
 const FORMSPREE_URL = "https://formspree.io/f/mvkzwyde";
 
@@ -24,12 +25,6 @@ const CHECKLIST = [
 ];
 
 const EMPTY_FORM = Object.fromEntries(FIELDS.map((f) => [f.name, '']));
-
-async function sha256(text) {
-  const bytes = new TextEncoder().encode(text);
-  const digest = await crypto.subtle.digest('SHA-256', bytes);
-  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, '0')).join('');
-}
 
 async function validate(values) {
   const errors = {};

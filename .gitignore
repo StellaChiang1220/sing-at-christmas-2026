@@ -16,3 +16,7 @@ npm-debug.log*
 # env
 .env
 .env.*
+
+# 含個資的名單，不要上傳
+member_list.pdf
+src/results/*.local.json
