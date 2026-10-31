@@ -5,6 +5,9 @@ import { sha256 } from './sha256.js';
 
 const FORMSPREE_URL = "https://formspree.io/f/mvkzwyde";
 
+// 報名已截止：改成 false 就會重新顯示報名表單
+const REGISTRATION_CLOSED = true;
+
 // 邀請函密碼的 SHA-256 雜湊值（避免明文出現在原始碼中）
 // 更換密碼：在終端機執行 printf '新密碼' | shasum -a 256，把結果貼到這裡
 const INVITE_CODE_HASH = "1bd134b2ab8345b4c082f3382e85ed4c00340c7188876b6cbe1e17cf161e4c69";
@@ -269,9 +272,16 @@ export default function App() {
           <h2 className="text-2xl font-bold text-red-400 mb-2 flex items-center gap-2">
             📝 報名與歌曲填寫
           </h2>
-          <p className="text-amber-100/70 text-sm mb-6">請填寫下方表單提交您的個人資料與一首拿手歌曲（<span className="text-red-400">*</span> 為必填）：</p>
+          {!REGISTRATION_CLOSED && (
+            <p className="text-amber-100/70 text-sm mb-6">請填寫下方表單提交您的個人資料與一首拿手歌曲（<span className="text-red-400">*</span> 為必填）：</p>
+          )}
 
-          {!submitted ? (
+          {REGISTRATION_CLOSED ? (
+            <div className="mt-4 p-6 glow-item rounded-xl text-center space-y-2">
+              <h3 className="text-xl font-bold text-amber-200">🔔 報名已截止</h3>
+              <p className="text-sm text-amber-50/80">感謝大家熱情參與！有梗禮題目已經抽好，請留意信箱中的通知信唷～</p>
+            </div>
+          ) : !submitted ? (
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
               {renderField(fieldByName.name)}
               {renderField(fieldByName.email)}
